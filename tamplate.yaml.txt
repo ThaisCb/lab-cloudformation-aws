@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Criação de um Bucket S3 e uma Tabela DynamoDB com AWS CloudFormation"
+
+Resources:
+  # --- Bucket S3 ---
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "meu-bucket-cloudformation-${AWS::AccountId}"
+      VersioningConfiguration:
+        Status: Enabled
+    DeletionPolicy: Retain   # evita exclusão acidental ao deletar a stack
+
+  # --- Tabela DynamoDB ---
+  MyDynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "MinhaTabelaCF-${AWS::AccountId}"
+      AttributeDefinitions:
+        - AttributeName: ID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: ID
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST  # sem provisionar capacidade (automático)
+      Tags:
+        - Key: Environment
+          Value: Lab
+        - Key: Project
+          Value: CloudFormationDemo
+    DeletionPolicy: Retain
+
+Outputs:
+  BucketName:
+    Description: "Nome do bucket criado"
+    Value: !Ref MyS3Bucket
+
+  DynamoDBTableName:
+    Description: "Nome da tabela DynamoDB criada"
+    Value: !Ref MyDynamoDBTable
+
+
+
+
